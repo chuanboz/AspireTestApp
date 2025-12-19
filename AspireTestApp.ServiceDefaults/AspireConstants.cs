@@ -56,4 +56,16 @@ public static class AspireConstants
         public const int DefaultHttpPort = 7071;
         public const string HttpEndpointName = "http";
     }
+
+    /// <summary>
+    /// Command-line switches for the distributed application host.
+    /// </summary>
+    public static class Switches
+    {
+        /// <summary>
+        /// When true, the AppHost runs Cosmos DB with the vNext (preview) emulator.
+        /// </summary>
+        public const string UseCosmosVNextEmulator = "UseCosmosVNextEmulator";
+    }
 }
+
