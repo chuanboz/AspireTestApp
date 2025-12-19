@@ -25,7 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="AspireTestApp.ServiceDefaults\AspireTestApp.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\AspireTestApp.ServiceDefaults\AspireTestApp.ServiceDefaults.csproj" />
   </ItemGroup>
 
 </Project>
