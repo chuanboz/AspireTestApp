@@ -1,32 +1,35 @@
 using Aspire.Hosting;
+using AspireTestApp.ServiceDefaults;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
-const string databaseName = "AspireTestApp";
-const string counterContainerName = "counters";
-const string leaseContainerName = "leases";
+var cosmos = builder.AddAzureCosmosDB(AspireConstants.Resources.CosmosDb)
+    .RunAsEmulator();
+var database = cosmos.AddCosmosDatabase(
+    AspireConstants.Resources.CosmosDatabase, 
+    AspireConstants.CosmosDb.DatabaseName);
+database.AddContainer(
+    AspireConstants.Resources.CosmosCountersContainer, 
+    partitionKeyPath: AspireConstants.CosmosDb.CounterPartitionKeyPath, 
+    containerName: AspireConstants.CosmosDb.CounterContainerName);
+database.AddContainer(
+    AspireConstants.Resources.CosmosLeasesContainer, 
+    partitionKeyPath: AspireConstants.CosmosDb.LeasePartitionKeyPath, 
+    containerName: AspireConstants.CosmosDb.LeaseContainerName);
 
-var cosmos = builder.AddAzureCosmosDB("cosmosdb");
-var database = cosmos.AddCosmosDatabase("cosmosdb-database", databaseName);
-database.AddContainer("cosmosdb-counters", partitionKeyPath: "/PartitionKey", containerName: counterContainerName);
-database.AddContainer("cosmosdb-leases", partitionKeyPath: "/id", containerName: leaseContainerName);
+var apiService = builder.AddProject<Projects.AspireTestApp_ApiService>(AspireConstants.Resources.ApiService)
+    .WithHttpHealthCheck(AspireConstants.HealthEndpoints.Health)
+    .WithReference(cosmos);
 
-var apiService = builder.AddProject<Projects.AspireTestApp_ApiService>("apiservice")
-    .WithHttpHealthCheck("/health")
+builder.AddProject<Projects.AspireTestApp_Functions>(AspireConstants.Resources.CounterFunction)
+    .WithHttpEndpoint(port: AspireConstants.Functions.DefaultHttpPort, name: AspireConstants.Functions.HttpEndpointName)
+    .WithHttpHealthCheck(AspireConstants.HealthEndpoints.AdminHealth)
     .WithReference(cosmos)
-    .WithEnvironment("CosmosDb__DatabaseName", databaseName)
-    .WithEnvironment("CosmosDb__ContainerName", counterContainerName);
-
-builder.AddProject<Projects.AspireTestApp_Functions>("counterprocessor")
-    .WithReference(cosmos)
-    .WithEnvironment("CosmosDb__DatabaseName", databaseName)
-    .WithEnvironment("CosmosDb__ContainerName", counterContainerName)
-    .WithEnvironment("CosmosDb__LeaseContainerName", leaseContainerName)
     .WaitFor(cosmos);
 
-builder.AddProject<Projects.AspireTestApp_Web>("webfrontend")
+builder.AddProject<Projects.AspireTestApp_Web>(AspireConstants.Resources.WebFrontend)
     .WithExternalHttpEndpoints()
-    .WithHttpHealthCheck("/health")
+    .WithHttpHealthCheck(AspireConstants.HealthEndpoints.Health)
     .WithReference(apiService)
     .WaitFor(apiService);
 

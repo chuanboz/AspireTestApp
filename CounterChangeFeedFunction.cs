@@ -1,3 +1,4 @@
+using AspireTestApp.ServiceDefaults;
 using AspireTestApp.Shared;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
@@ -9,10 +10,10 @@ public sealed class CounterChangeFeedFunction(ILogger<CounterChangeFeedFunction>
     [Function(nameof(CounterChangeFeedFunction))]
     public void Run(
         [CosmosDBTrigger(
-            databaseName: "%CosmosDb__DatabaseName%",
-            containerName: "%CosmosDb__ContainerName%",
-            Connection = "CosmosDb",
-            LeaseContainerName = "%CosmosDb__LeaseContainerName%",
+            databaseName: AspireConstants.CosmosDb.DatabaseName,
+            containerName: AspireConstants.CosmosDb.CounterContainerName,
+            Connection = AspireConstants.CosmosDb.ConnectionStringKey,
+            LeaseContainerName = AspireConstants.CosmosDb.LeaseContainerName,
             CreateLeaseContainerIfNotExists = true)]
         IReadOnlyList<CounterDocument> input,
         FunctionContext context)

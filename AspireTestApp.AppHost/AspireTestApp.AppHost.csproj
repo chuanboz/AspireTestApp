@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AspireTestApp.ApiService\AspireTestApp.ApiService.csproj" />
+    <ProjectReference Include="..\AspireTestApp.ServiceDefaults\AspireTestApp.ServiceDefaults.csproj" IsAspireProjectResource="false" />
     <ProjectReference Include="..\AspireTestApp.Web\AspireTestApp.Web.csproj" />
     <ProjectReference Include="..\AspireTestApp.Functions.csproj" />
   </ItemGroup>

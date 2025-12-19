@@ -10,6 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="CounterHttpFunction.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="CounterChangeFeedFunction.cs" />
     <Compile Include="Shared\CounterDocument.cs" Link="Shared\CounterDocument.cs" />
@@ -17,12 +18,14 @@
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="Microsoft.ApplicationInsights.WorkerService" />
     <PackageReference Include="Microsoft.Azure.Functions.Worker" />
-    <PackageReference Include="Microsoft.Azure.Functions.Worker.ApplicationInsights" />
     <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.CosmosDB" />
     <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Http.AspNetCore" />
     <PackageReference Include="Microsoft.Azure.Functions.Worker.Sdk" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="AspireTestApp.ServiceDefaults\AspireTestApp.ServiceDefaults.csproj" />
   </ItemGroup>
 
 </Project>
