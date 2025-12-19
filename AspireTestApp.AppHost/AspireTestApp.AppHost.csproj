@@ -13,10 +13,12 @@
   <ItemGroup>
     <ProjectReference Include="..\AspireTestApp.ApiService\AspireTestApp.ApiService.csproj" />
     <ProjectReference Include="..\AspireTestApp.Web\AspireTestApp.Web.csproj" />
+    <ProjectReference Include="..\AspireTestApp.Functions.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Aspire.Hosting.AppHost" Version="9.5.0" />
+    <PackageReference Include="Aspire.Hosting.Azure.CosmosDB" Version="9.5.0" />
   </ItemGroup>
 
 </Project>
