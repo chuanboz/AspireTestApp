@@ -13,6 +13,7 @@ builder.Services.AddHealthChecks();
 // Configure CosmosDB client to trust the emulator certificate in development
 if (builder.Environment.IsDevelopment())
 {
+    /*
     builder.Services.AddOptions<Microsoft.Azure.Cosmos.CosmosClientOptions>()
         .Configure(options =>
         {
@@ -25,6 +26,7 @@ if (builder.Environment.IsDevelopment())
                 });
             };
         });
+    */
 }
 
 builder.Build().Run();

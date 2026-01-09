@@ -9,19 +9,21 @@ var useCosmosVNextEmulator = builder.Configuration
 
 var cosmos = builder.AddAzureCosmosDB(AspireConstants.Resources.CosmosDb);
 
-#pragma warning disable ASPIRECOSMOSDB001
 if (useCosmosVNextEmulator)
 {
+#pragma warning disable ASPIRECOSMOSDB001
     cosmos.RunAsPreviewEmulator(emulator =>
      {
          // Run emulator over HTTP to avoid cert trust/setup for local dev.
          emulator.WithDataExplorer();
-         emulator.WithGatewayPort(8081);
+         //emulator.WithGatewayPort(8081);
          emulator.WithArgs("--protocol", "http");
-         emulator.WithEnvironment("AZURE_COSMOS_EMULATOR_PARTITION_COUNT", "1");
+         //emulator.WithEnvironment("AZURE_COSMOS_EMULATOR_PARTITION_COUNT", "1");
      })
-    .WithHttpEndpoint(name: "health-server", port: 8080, targetPort: 8080)
-    .WithHttpHealthCheck(endpointName: "health-server", path: "/ready");
+    .WithHttpEndpoint(name: "health-server", targetPort: 8080)
+    .WithHttpHealthCheck(endpointName: "health-server", path: "/ready")
+    ;
+#pragma warning restore ASPIRECOSMOSDB001
 }
 else
 {
@@ -49,7 +51,6 @@ else
             });
     });
 }
-#pragma warning restore ASPIRECOSMOSDB001
 
 var database = cosmos.AddCosmosDatabase(
     AspireConstants.Resources.CosmosDatabase, 
