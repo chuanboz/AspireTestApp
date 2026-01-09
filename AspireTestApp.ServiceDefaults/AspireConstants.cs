@@ -30,7 +30,7 @@ public static class AspireConstants
         public const string CounterContainerName = "counters";
         public const string WeatherContainerName = "weather";
         public const string LeaseContainerName = "leases";
-        public const string CounterPartitionKeyPath = "/PartitionKey";
+        public const string CounterPartitionKeyPath = "/name";
         public const string WeatherPartitionKeyPath = "/PartitionKey";
         public const string LeasePartitionKeyPath = "/id";
         

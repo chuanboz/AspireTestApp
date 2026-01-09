@@ -1,25 +1,60 @@
 ﻿@page "/counter"
+@page "/counter/{counterName}"
 @rendermode InteractiveServer
 @inject CounterApiClient CounterApi
+@inject NavigationManager NavigationManager
 
-<PageTitle>Counter</PageTitle>
+<PageTitle>Counter - @CurrentCounterName</PageTitle>
 
-<h1>Counter</h1>
+<h1>Counter: @CurrentCounterName</h1>
 
 <p role="status">Current count: @currentCount</p>
 
 <button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
 
+<div class="mt-4">
+    <h3>Switch to another counter</h3>
+    <div class="input-group mb-3" style="max-width: 400px;">
+        <input type="text" class="form-control" placeholder="Enter counter name" @bind="newCounterName" @bind:event="oninput" />
+        <button class="btn btn-outline-secondary" type="button" @onclick="SwitchCounter">Switch</button>
+    </div>
+    <small class="text-muted">Default counter name: "default"</small>
+</div>
+
 @code {
+    [Parameter]
+    public string? CounterName { get; set; }
+
     private int currentCount = 0;
+    private string newCounterName = "";
+    
+    private string CurrentCounterName => CounterName ?? "default";
 
     protected override async Task OnInitializedAsync()
     {
-        currentCount = await CounterApi.GetCounterAsync();
+        await LoadCounter();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await LoadCounter();
+    }
+
+    private async Task LoadCounter()
+    {
+        currentCount = await CounterApi.GetCounterAsync(CurrentCounterName);
     }
 
     private async Task IncrementCount()
     {
-        currentCount = await CounterApi.IncrementCounterAsync();
+        currentCount = await CounterApi.IncrementCounterAsync(CurrentCounterName);
+    }
+
+    private void SwitchCounter()
+    {
+        if (!string.IsNullOrWhiteSpace(newCounterName))
+        {
+            NavigationManager.NavigateTo($"/counter/{Uri.EscapeDataString(newCounterName)}");
+        }
     }
 }

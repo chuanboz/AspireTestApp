@@ -7,8 +7,8 @@ public sealed record CounterDocument
     [JsonProperty("id")]
     public required string Id { get; init; }
 
-    [JsonProperty("partitionKey")]
-    public string PartitionKey { get; init; } = "counter";
+    [JsonProperty("name")]
+    public required string Name { get; init; }
 
     [JsonProperty("value")]
     public required int Value { get; init; }

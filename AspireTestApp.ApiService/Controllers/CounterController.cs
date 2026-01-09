@@ -9,10 +9,8 @@ namespace AspireTestApp.ApiService.Controllers;
 [Route("api/[controller]")]
 public class CounterController(CosmosClient cosmosClient, ILogger<CounterController> logger) : ControllerBase
 {
-    private const string CounterId = "default";
-
     [HttpGet]
-    public async Task<ActionResult<int>> GetCounter(CancellationToken cancellationToken = default)
+    public async Task<ActionResult<int>> GetCounter([FromQuery] string name = "default", CancellationToken cancellationToken = default)
     {
         try
         {
@@ -21,27 +19,27 @@ public class CounterController(CosmosClient cosmosClient, ILogger<CounterControl
                 .GetContainer(AspireConstants.CosmosDb.CounterContainerName);
 
             var response = await container.ReadItemAsync<CounterDocument>(
-                CounterId,
-                new PartitionKey("counter"),
+                name,
+                new PartitionKey(name),
                 cancellationToken: cancellationToken);
 
-            logger.LogInformation("Retrieved counter with value {Value}", response.Resource.Value);
+            logger.LogInformation("Retrieved counter '{Name}' with value {Value}", name, response.Resource.Value);
             return Ok(response.Resource.Value);
         }
         catch (CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
         {
-            logger.LogWarning("Counter not found, returning default value 0");
+            logger.LogWarning("Counter '{Name}' not found, returning default value 0", name);
             return Ok(0);
         }
         catch (CosmosException ex)
         {
-            logger.LogError(ex, "Failed to retrieve counter. StatusCode: {StatusCode}", ex.StatusCode);
+            logger.LogError(ex, "Failed to retrieve counter '{Name}'. StatusCode: {StatusCode}", name, ex.StatusCode);
             return StatusCode(500, "Failed to retrieve counter");
         }
     }
 
     [HttpGet("status")]
-    public async Task<ActionResult<object>> GetCounterStatus(CancellationToken cancellationToken = default)
+    public async Task<ActionResult<object>> GetCounterStatus([FromQuery] string name = "default", CancellationToken cancellationToken = default)
     {
         try
         {
@@ -50,32 +48,32 @@ public class CounterController(CosmosClient cosmosClient, ILogger<CounterControl
                 .GetContainer(AspireConstants.CosmosDb.CounterContainerName);
 
             var response = await container.ReadItemAsync<CounterDocument>(
-                CounterId,
-                new PartitionKey("counter"),
+                name,
+                new PartitionKey(name),
                 cancellationToken: cancellationToken);
 
             return Ok(new
             {
                 exists = true,
                 id = response.Resource.Id,
+                name = response.Resource.Name,
                 value = response.Resource.Value,
-                updatedAt = response.Resource.UpdatedAt,
-                partitionKey = response.Resource.PartitionKey
+                updatedAt = response.Resource.UpdatedAt
             });
         }
         catch (CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
         {
-            return Ok(new { exists = false, message = "Counter not yet initialized" });
+            return Ok(new { exists = false, message = $"Counter '{name}' not yet initialized" });
         }
         catch (CosmosException ex)
         {
-            logger.LogError(ex, "Failed to retrieve counter status. StatusCode: {StatusCode}", ex.StatusCode);
+            logger.LogError(ex, "Failed to retrieve counter '{Name}' status. StatusCode: {StatusCode}", name, ex.StatusCode);
             return StatusCode(500, new { error = "Failed to retrieve counter status" });
         }
     }
 
     [HttpPost]
-    public async Task<ActionResult<int>> IncrementCounter(CancellationToken cancellationToken = default)
+    public async Task<ActionResult<int>> IncrementCounter([FromQuery] string name = "default", CancellationToken cancellationToken = default)
     {
         var container = cosmosClient
             .GetDatabase(AspireConstants.CosmosDb.DatabaseName)
@@ -85,8 +83,8 @@ public class CounterController(CosmosClient cosmosClient, ILogger<CounterControl
         try
         {
             var response = await container.ReadItemAsync<CounterDocument>(
-                CounterId,
-                new PartitionKey("counter"),
+                name,
+                new PartitionKey(name),
                 cancellationToken: cancellationToken);
 
             counterDoc = response.Resource with
@@ -95,16 +93,16 @@ public class CounterController(CosmosClient cosmosClient, ILogger<CounterControl
                 UpdatedAt = DateTimeOffset.UtcNow
             };
 
-            logger.LogInformation("Incrementing existing counter from {OldValue} to {NewValue}", 
-                response.Resource.Value, counterDoc.Value);
+            logger.LogInformation("Incrementing existing counter '{Name}' from {OldValue} to {NewValue}", 
+                name, response.Resource.Value, counterDoc.Value);
         }
         catch (CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
         {
-            logger.LogWarning("Counter not found during increment, creating new counter with value 1");
+            logger.LogWarning("Counter '{Name}' not found during increment, creating new counter with value 1", name);
             counterDoc = new CounterDocument
             {
-                Id = CounterId,
-                PartitionKey = "counter",
+                Id = name,
+                Name = name,
                 Value = 1,
                 UpdatedAt = DateTimeOffset.UtcNow
             };
@@ -114,15 +112,15 @@ public class CounterController(CosmosClient cosmosClient, ILogger<CounterControl
         {
             await container.UpsertItemAsync(
                 counterDoc,
-                new PartitionKey(counterDoc.PartitionKey),
+                new PartitionKey(name),
                 cancellationToken: cancellationToken);
 
-            logger.LogInformation("Counter successfully updated to {Value}", counterDoc.Value);
+            logger.LogInformation("Counter '{Name}' successfully updated to {Value}", name, counterDoc.Value);
             return Ok(counterDoc.Value);
         }
         catch (CosmosException ex)
         {
-            logger.LogError(ex, "Failed to upsert counter document. StatusCode: {StatusCode}", ex.StatusCode);
+            logger.LogError(ex, "Failed to upsert counter '{Name}' document. StatusCode: {StatusCode}", name, ex.StatusCode);
             return StatusCode(500, "Failed to update counter");
         }
     }

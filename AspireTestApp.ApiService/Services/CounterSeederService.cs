@@ -9,6 +9,7 @@ public class CounterSeederService(
     ILogger<CounterSeederService> logger) : IHostedService
 {
     private const string CounterId = "default";
+    private const string CounterName = "default";
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
@@ -25,10 +26,11 @@ public class CounterSeederService(
             {
                 var existingCounter = await container.ReadItemAsync<CounterDocument>(
                     CounterId,
-                    new PartitionKey("counter"),
+                    new PartitionKey(CounterName),
                     cancellationToken: cancellationToken);
 
-                logger.LogInformation("Counter already exists with value {Value}", existingCounter.Resource.Value);
+                logger.LogInformation("Counter '{Name}' already exists with value {Value}", 
+                    existingCounter.Resource.Name, existingCounter.Resource.Value);
             }
             catch (CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
@@ -36,17 +38,17 @@ public class CounterSeederService(
                 var initialCounter = new CounterDocument
                 {
                     Id = CounterId,
-                    PartitionKey = "counter",
+                    Name = CounterName,
                     Value = 0,
                     UpdatedAt = DateTimeOffset.UtcNow
                 };
 
                 await container.CreateItemAsync(
                     initialCounter,
-                    new PartitionKey(initialCounter.PartitionKey),
+                    new PartitionKey(CounterName),
                     cancellationToken: cancellationToken);
 
-                logger.LogInformation("Counter seeded successfully with initial value 0");
+                logger.LogInformation("Counter '{Name}' seeded successfully with initial value 0", CounterName);
             }
         }
         catch (Exception ex)

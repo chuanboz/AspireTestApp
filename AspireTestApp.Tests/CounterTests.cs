@@ -13,15 +13,16 @@ public class CounterTests(AspireAppHostFixture fixture)
         // Arrange
         var cancellationToken = TestContext.Current.CancellationToken;
         var app = fixture.App;
+        var counterName = $"test-get-initial-{Guid.NewGuid():N}";
 
         // Act
         var httpClient = app.CreateHttpClient("apiservice");
-        var response = await httpClient.GetAsync("/api/counter", cancellationToken);
+        var response = await httpClient.GetAsync($"/api/counter?name={counterName}", cancellationToken);
 
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var counter = await response.Content.ReadFromJsonAsync<int>(cancellationToken);
-        Assert.True(counter >= 0);
+        Assert.Equal(0, counter); // New counter should start at 0
     }
 
     [Fact]
@@ -30,14 +31,15 @@ public class CounterTests(AspireAppHostFixture fixture)
         // Arrange
         var cancellationToken = TestContext.Current.CancellationToken;
         var app = fixture.App;
+        var counterName = $"test-increment-{Guid.NewGuid():N}";
 
         // Act
         var httpClient = app.CreateHttpClient("apiservice");
         
-        var getResponse = await httpClient.GetAsync("/api/counter", cancellationToken);
+        var getResponse = await httpClient.GetAsync($"/api/counter?name={counterName}", cancellationToken);
         var initialValue = await getResponse.Content.ReadFromJsonAsync<int>(cancellationToken);
         
-        var postResponse = await httpClient.PostAsync("/api/counter", null, cancellationToken);
+        var postResponse = await httpClient.PostAsync($"/api/counter?name={counterName}", null, cancellationToken);
 
         // Assert
         Assert.Equal(HttpStatusCode.OK, postResponse.StatusCode);
@@ -51,6 +53,7 @@ public class CounterTests(AspireAppHostFixture fixture)
         // Arrange
         var cancellationToken = TestContext.Current.CancellationToken;
         var app = fixture.App;
+        var counterName = $"test-multiple-{Guid.NewGuid():N}";
 
         // Act
         var httpClient = app.CreateHttpClient("apiservice");
@@ -61,28 +64,23 @@ public class CounterTests(AspireAppHostFixture fixture)
         for (int i = 0; i < incrementCount; i++)
         {
             // Get current value
-            var getResponse = await httpClient.GetAsync("/api/counter", cancellationToken);
+            var getResponse = await httpClient.GetAsync($"/api/counter?name={counterName}", cancellationToken);
             var currentValue = await getResponse.Content.ReadFromJsonAsync<int>(cancellationToken);
             
             // Increment
-            var postResponse = await httpClient.PostAsync("/api/counter", null, cancellationToken);
+            var postResponse = await httpClient.PostAsync($"/api/counter?name={counterName}", null, cancellationToken);
             Assert.Equal(HttpStatusCode.OK, postResponse.StatusCode);
             var newValue = await postResponse.Content.ReadFromJsonAsync<int>(cancellationToken);
             
             // Verify increment
             Assert.Equal(currentValue + 1, newValue);
             values.Add(newValue);
-            
-            // Small delay
-            await Task.Delay(10, cancellationToken);
         }
 
-        // Assert - Verify values are increasing
-        for (int i = 1; i < values.Count; i++)
-        {
-            Assert.True(values[i] > values[i - 1], 
-                $"Value at index {i} should be greater than previous value");
-        }
+        // Assert - Verify values are 1, 2, 3 (since this is a new counter)
+        Assert.Equal(1, values[0]);
+        Assert.Equal(2, values[1]);
+        Assert.Equal(3, values[2]);
     }
 
     [Fact]
@@ -91,14 +89,15 @@ public class CounterTests(AspireAppHostFixture fixture)
         // Arrange
         var cancellationToken = TestContext.Current.CancellationToken;
         var app = fixture.App;
+        var counterName = $"test-persist-{Guid.NewGuid():N}";
 
         // Act
         var httpClient = app.CreateHttpClient("apiservice");
         
-        var postResponse = await httpClient.PostAsync("/api/counter", null, cancellationToken);
+        var postResponse = await httpClient.PostAsync($"/api/counter?name={counterName}", null, cancellationToken);
         var valueAfterIncrement = await postResponse.Content.ReadFromJsonAsync<int>(cancellationToken);
         
-        var getResponse = await httpClient.GetAsync("/api/counter", cancellationToken);
+        var getResponse = await httpClient.GetAsync($"/api/counter?name={counterName}", cancellationToken);
         var valueFromGet = await getResponse.Content.ReadFromJsonAsync<int>(cancellationToken);
 
         // Assert
