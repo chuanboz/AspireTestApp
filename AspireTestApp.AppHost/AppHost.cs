@@ -12,7 +12,16 @@ var cosmos = builder.AddAzureCosmosDB(AspireConstants.Resources.CosmosDb);
 #pragma warning disable ASPIRECOSMOSDB001
 if (useCosmosVNextEmulator)
 {
-    cosmos = cosmos.RunAsPreviewEmulator(emulator => emulator.WithDataExplorer());
+    cosmos.RunAsPreviewEmulator(emulator =>
+     {
+         // Run emulator over HTTP to avoid cert trust/setup for local dev.
+         emulator.WithDataExplorer();
+         emulator.WithGatewayPort(8081);
+         emulator.WithArgs("--protocol", "http");
+         emulator.WithEnvironment("AZURE_COSMOS_EMULATOR_PARTITION_COUNT", "1");
+     })
+    .WithHttpEndpoint(name: "health-server", port: 8080, targetPort: 8080)
+    .WithHttpHealthCheck(endpointName: "health-server", path: "/ready");
 }
 else
 {
