@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AspireTestApp.AppHost\AspireTestApp.AppHost.csproj" />
+    <ProjectReference Include="..\AspireTestApp.Models\AspireTestApp.Models.csproj" />
   </ItemGroup>
 
   <ItemGroup>

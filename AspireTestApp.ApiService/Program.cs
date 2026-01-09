@@ -1,3 +1,4 @@
+using AspireTestApp.ApiService.Services;
 using AspireTestApp.ServiceDefaults;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +12,9 @@ builder.AddAzureCosmosClient(AspireConstants.Resources.CosmosDb);
 // Add services to the container.
 builder.Services.AddProblemDetails();
 builder.Services.AddControllers();
+
+// Add counter seeder hosted service
+builder.Services.AddHostedService<CounterSeederService>();
 
 var app = builder.Build();
 
