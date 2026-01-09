@@ -13,7 +13,6 @@
     <Compile Include="CounterHttpFunction.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="CounterChangeFeedFunction.cs" />
-    <Compile Include="Shared\CounterDocument.cs" Link="Shared\CounterDocument.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -30,6 +29,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AspireTestApp.ServiceDefaults\AspireTestApp.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\AspireTestApp.Models\AspireTestApp.Models.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Shared\" />
   </ItemGroup>
 
 </Project>

@@ -73,9 +73,13 @@ var apiService = builder.AddProject<Projects.AspireTestApp_ApiService>(AspireCon
     .WithReference(cosmos)
     .WaitFor(cosmos);
 
+// Wait for API service to be healthy - it validates Cosmos DB is working
+// Functions need extra time for Cosmos DB emulator to be fully indexed
 builder.AddProject<Projects.AspireTestApp_Functions>(AspireConstants.Resources.CounterFunction)
     .WithReference(cosmos)
-    .WaitFor(cosmos);
+    .WaitFor(cosmos)
+    .WaitFor(apiService)
+    .WithEnvironment("COSMOS_DB_STARTUP_DELAY", "10000");  // 10 second delay
 
 builder.AddProject<Projects.AspireTestApp_Web>(AspireConstants.Resources.WebFrontend)
     .WithExternalHttpEndpoints()

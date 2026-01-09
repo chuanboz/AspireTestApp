@@ -38,7 +38,7 @@ public static class AspireConstants
         /// Connection string configuration key name for Cosmos DB.
         /// Used by Azure Functions to lookup the connection string from configuration.
         /// </summary>
-        public const string ConnectionStringKey = "CosmosDb";
+        public const string ConnectionStringKey = "cosmosDb";
     }
 
     /// <summary>

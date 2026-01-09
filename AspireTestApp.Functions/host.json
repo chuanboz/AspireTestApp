@@ -2,7 +2,30 @@
     "version": "2.0",
     "logging": {
         "logLevel": {
-            "default": "Information"
+            "default": "Information",
+            "Microsoft.Azure.WebJobs.Extensions.CosmosDB": "Debug"
         }
-    }
+    },
+    "extensions": {
+        "cosmosDB": {
+            "connectionMode": "Gateway",
+            "protocol": "Https",
+            "maxConnectionsPerEndpoint": 10,
+            "maxRequestsPerConnection": 10,
+            "requestTimeout": "00:01:00",
+            "openTimeout": "00:01:00",
+            "idleTimeout": "00:10:00"
+        }
+    },
+    "retry": {
+        "strategy": "fixedDelay",
+        "maxRetryCount": 5,
+        "delayInterval": "00:00:05"
+    },
+    "healthMonitor": {
+        "enabled": true,
+        "healthCheckInterval": "00:00:10",
+        "healthCheckWindow": "00:02:00"
+    },
+    "functionTimeout": "00:05:00"
 }

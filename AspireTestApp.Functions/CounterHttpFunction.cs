@@ -1,4 +1,4 @@
-using AspireTestApp.Shared;
+using AspireTestApp.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
@@ -27,6 +27,7 @@ public sealed class CounterHttpFunction
         var counter = new CounterDocument
         {
             Id = id,
+            Name = id,
             Value = Random.Shared.Next(1, 100),
             UpdatedAt = DateTimeOffset.UtcNow
         };
@@ -40,11 +41,14 @@ public sealed class CounterHttpFunction
     {
         _logger.LogInformation("Creating new counter");
 
+        var counterId = Guid.NewGuid().ToString();
+
         // This is a sample HTTP trigger
         // In a real scenario, you would create the counter in Cosmos DB
         var counter = new CounterDocument
         {
-            Id = Guid.NewGuid().ToString(),
+            Id = counterId,
+            Name = counterId,
             Value = 0,
             UpdatedAt = DateTimeOffset.UtcNow
         };

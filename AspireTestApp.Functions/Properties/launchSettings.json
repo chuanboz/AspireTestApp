@@ -3,6 +3,7 @@
   "profiles": {
     "Functions": {
       "commandName": "Project",
+      "commandLineArgs": "--verbose",
       "dotnetRunMessages": true,
       "launchBrowser": false,
       "applicationUrl": "http://localhost:7071",

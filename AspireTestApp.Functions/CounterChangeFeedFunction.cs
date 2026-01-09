@@ -1,5 +1,5 @@
+using AspireTestApp.Models;
 using AspireTestApp.ServiceDefaults;
-using AspireTestApp.Shared;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 
@@ -12,9 +12,7 @@ public sealed class CounterChangeFeedFunction(ILogger<CounterChangeFeedFunction>
         [CosmosDBTrigger(
             databaseName: AspireConstants.CosmosDb.DatabaseName,
             containerName: AspireConstants.CosmosDb.CounterContainerName,
-            Connection = AspireConstants.CosmosDb.ConnectionStringKey,
-            LeaseContainerName = AspireConstants.CosmosDb.LeaseContainerName,
-            CreateLeaseContainerIfNotExists = true)]
+            Connection = AspireConstants.CosmosDb.ConnectionStringKey)]
         IReadOnlyList<CounterDocument> input,
         FunctionContext context)
     {
@@ -23,9 +21,12 @@ public sealed class CounterChangeFeedFunction(ILogger<CounterChangeFeedFunction>
             return;
         }
 
+        logger.LogInformation("Processing {Count} counter changes", input.Count);
+
         foreach (var doc in input)
         {
-            logger.LogInformation("Counter changed: id={Id} value={Value} updatedAt={UpdatedAt}", doc.Id, doc.Value, doc.UpdatedAt);
+            logger.LogInformation("Counter changed: name={Name} id={Id} value={Value} updatedAt={UpdatedAt}", 
+                doc.Name, doc.Id, doc.Value, doc.UpdatedAt);
         }
     }
 }
