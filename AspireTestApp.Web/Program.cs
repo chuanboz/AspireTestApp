@@ -20,6 +20,11 @@ builder.Services.AddHttpClient<WeatherApiClient>(client =>
         client.BaseAddress = new($"https+http://{AspireConstants.Resources.ApiService}");
     });
 
+builder.Services.AddHttpClient<CounterApiClient>(client =>
+    {
+        client.BaseAddress = new($"https+http://{AspireConstants.Resources.ApiService}");
+    });
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())

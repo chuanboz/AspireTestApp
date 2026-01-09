@@ -8,9 +8,15 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AspireTestApp.ServiceDefaults\AspireTestApp.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\AspireTestApp.Models\AspireTestApp.Models.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Aspire.Microsoft.Azure.Cosmos" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Models\" />
   </ItemGroup>
 
 </Project>

@@ -1,5 +1,6 @@
 ﻿@page "/counter"
 @rendermode InteractiveServer
+@inject CounterApiClient CounterApi
 
 <PageTitle>Counter</PageTitle>
 
@@ -12,8 +13,13 @@
 @code {
     private int currentCount = 0;
 
-    private void IncrementCount()
+    protected override async Task OnInitializedAsync()
     {
-        currentCount++;
+        currentCount = await CounterApi.GetCounterAsync();
+    }
+
+    private async Task IncrementCount()
+    {
+        currentCount = await CounterApi.IncrementCounterAsync();
     }
 }

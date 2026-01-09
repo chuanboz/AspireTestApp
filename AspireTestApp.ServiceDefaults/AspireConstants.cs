@@ -14,6 +14,7 @@ public static class AspireConstants
         public const string CosmosDb = "cosmosdb";
         public const string CosmosDatabase = "cosmosdb-database";
         public const string CosmosCountersContainer = "cosmosdb-counters";
+        public const string CosmosWeatherContainer = "cosmosdb-weather";
         public const string CosmosLeasesContainer = "cosmosdb-leases";
         public const string ApiService = "apiservice";
         public const string WebFrontend = "webfrontend";
@@ -27,8 +28,10 @@ public static class AspireConstants
     {
         public const string DatabaseName = "AspireTestApp";
         public const string CounterContainerName = "counters";
+        public const string WeatherContainerName = "weather";
         public const string LeaseContainerName = "leases";
         public const string CounterPartitionKeyPath = "/PartitionKey";
+        public const string WeatherPartitionKeyPath = "/PartitionKey";
         public const string LeasePartitionKeyPath = "/id";
         
         /// <summary>
