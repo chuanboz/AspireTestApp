@@ -1,3 +1,5 @@
+using AspireTestApp.ServiceDefaults;
+using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Builder;
 using Microsoft.Extensions.Configuration;
@@ -20,6 +22,8 @@ if (int.TryParse(startupDelayStr, out var startupDelay) && startupDelay > 0 && b
     Console.WriteLine("Cosmos DB startup delay completed. Starting Functions host...");
 }
 
+builder.AddAzureCosmosClient(AspireConstants.Resources.CosmosDb);
+
 // Configure CosmosDB client to trust the emulator certificate in development
 if (builder.Environment.IsDevelopment())
 {
@@ -40,3 +44,4 @@ if (builder.Environment.IsDevelopment())
 }
 
 builder.Build().Run();
+
