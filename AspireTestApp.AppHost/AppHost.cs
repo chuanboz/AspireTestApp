@@ -18,7 +18,8 @@ if (useCosmosVNextEmulator)
          emulator.WithDataExplorer();
          //emulator.WithGatewayPort(8081);
          emulator.WithArgs("--protocol", "http");
-         //emulator.WithEnvironment("AZURE_COSMOS_EMULATOR_PARTITION_COUNT", "1");
+         emulator.WithEnvironment("OTEL_EXPORTER_OTLP_ENDPOINT", "https://localhost:21117");
+         emulator.WithEnvironment("OTEL_EXPORTER_OTLP_PROTOCOL", "grpc");
      })
     .WithHttpEndpoint(name: "health-server", targetPort: 8080)
     .WithHttpHealthCheck(endpointName: "health-server", path: "/ready")
