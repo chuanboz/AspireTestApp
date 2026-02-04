@@ -13,14 +13,19 @@ if (useCosmosVNextEmulator)
 {
 #pragma warning disable ASPIRECOSMOSDB001
     cosmos.RunAsPreviewEmulator(emulator =>
-     {
-         // Run emulator over HTTP to avoid cert trust/setup for local dev.
-         emulator.WithDataExplorer();
-         //emulator.WithGatewayPort(8081);
-         emulator.WithArgs("--protocol", "http");
-         emulator.WithEnvironment("OTEL_EXPORTER_OTLP_ENDPOINT", "https://localhost:21117");
-         emulator.WithEnvironment("OTEL_EXPORTER_OTLP_PROTOCOL", "grpc");
-     })
+    {
+        // Use latest vnext-preview image
+        emulator.WithImageTag("vnext-preview");
+        // Run emulator over HTTP to avoid cert trust/setup for local dev.
+        //emulator.WithGatewayPort(8081);
+        emulator.WithArgs("--protocol", "http");
+        //emulator.WithEnvironment("AZURE_COSMOS_EMULATOR_PARTITION_COUNT", "1");
+
+        // Configure OTLP export to Aspire dashboard (unauthenticated endpoint)
+        emulator.WithEnvironment("ENABLE_OTLP_EXPORTER", "true");
+        emulator.WithEnvironment("OTEL_EXPORTER_OTLP_ENDPOINT", "http://host.docker.internal:19218");
+        emulator.WithEnvironment("OTEL_EXPORTER_OTLP_PROTOCOL", "grpc");
+    })
     .WithHttpEndpoint(name: "health-server", targetPort: 8080)
     .WithHttpHealthCheck(endpointName: "health-server", path: "/ready")
     ;
